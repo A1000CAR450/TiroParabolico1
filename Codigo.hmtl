@@ -145,6 +145,7 @@ window.addEventListener("resize", resizeCanvas);
 
 let proyectil = null;
 let trayectoria = [];
+const ESCALA = 5; // Escala de píxeles por metro
 
 function dibujarEscenario(){
 
@@ -223,8 +224,8 @@ function actualizar(){
         const x = proyectil.vx * t;
         const y = proyectil.h + (proyectil.vy * t) - (0.5 * proyectil.g * t * t);
 
-        proyectil.x = 50 + x * 5;
-        proyectil.y = (canvas.height - 80) - (y * 5);
+        proyectil.x = 50 + x * ESCALA;
+        proyectil.y = (canvas.height - 80) - (y * ESCALA);
 
         trayectoria.push({
             x:proyectil.x,
@@ -285,7 +286,7 @@ function lanzar(){
         vx:vx,
         vy:vy,
         g:gravedad,
-        h:altura * 5,
+        h:altura,
         t:0
     };
 }
