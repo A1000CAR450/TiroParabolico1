@@ -98,22 +98,22 @@ canvas{
 
         <div class="control">
             <label>Velocidad Inicial (m/s)</label>
-            <input type="number" id="velocidad" value="50">
+            <input type="number" id="velocidad" value="50" min="0" max="100">
         </div>
 
         <div class="control">
             <label>Ángulo (grados)</label>
-            <input type="number" id="angulo" value="45">
+            <input type="number" id="angulo" value="45" min="0" max="90">
         </div>
 
         <div class="control">
             <label>Gravedad</label>
-            <input type="number" id="gravedad" value="9.8">
+            <input type="number" id="gravedad" value="9.8" min="0.1" max="20" step="0.1">
         </div>
 
         <div class="control">
             <label>Altura Inicial</label>
-            <input type="number" id="altura" value="0">
+            <input type="number" id="altura" value="0" min="0" max="100">
         </div>
 
         <button onclick="lanzar()">🚀 Lanzar</button>
@@ -240,17 +240,24 @@ function actualizar(){
     requestAnimationFrame(actualizar);
 }
 
+actualizar();
+
 function lanzar(){
 
     trayectoria = [];
+    proyectil = null;
 
-    const velocidad = parseFloat(document.getElementById("velocidad").value);
-    const angulo = parseFloat(document.getElementById("angulo").value);
-    const gravedad = parseFloat(document.getElementById("gravedad").value);
-    const altura = parseFloat(document.getElementById("altura").value);
+    const velocidad = parseFloat(document.getElementById("velocidad").value) || 50;
+    const anguloGrados = parseFloat(document.getElementById("angulo").value) || 45;
+    const gravedad = parseFloat(document.getElementById("gravedad").value) || 9.8;
+    const altura = parseFloat(document.getElementById("altura").value) || 0;
 
-    const rad = angulo * Math.PI / 180;
+    if(velocidad <= 0 || anguloGrados < 0 || anguloGrados > 90 || gravedad <= 0){
+        alert("Por favor, ingresa valores válidos");
+        return;
+    }
 
+    const rad = (anguloGrados * Math.PI) / 180;
     const vx = velocidad * Math.cos(rad);
     const vy = velocidad * Math.sin(rad);
 
@@ -278,12 +285,10 @@ function lanzar(){
         vx:vx,
         vy:vy,
         g:gravedad,
-        h:altura,
+        h:altura * 5,
         t:0
     };
 }
-
-actualizar();
 
 </script>
 
