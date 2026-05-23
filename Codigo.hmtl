@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Simulador de Tiro Parabólico</title>
+
+<style>
+    body{
+        margin:0;
+        font-family:Arial, Helvetica, sans-serif;
+        background:#1e1e1e;
+        color:white;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+    }
+
+    h1{
+        margin-top:20px;
+    }
+
+    .panel{
+        margin:20px;
+        background:#2d2d2d;
+        padding:20px;
+        border-radius:10px;
+        display:grid;
+        grid-template-columns:repeat(2, 1fr);
+        gap:15px;
+        width:400px;
+    }
+
+    label{
+        display:flex;
+        flex-direction:column;
+        font-size:14px;
+    }
+
+    input{
+        margin-top:5px;
+        padding:8px;
+        border:none;
+        border-radius:5px;
+    }
+
+    button{
+        grid-column:span 2;
+        padding:12px;
+        background:#00aaff;
+        color:white;
+        border:none;
+        border-radius:8px;
+        font-size:16px;
+        cursor:pointer;
+    }
+
+    button:hover{
+        background:#0088cc;
+    }
+
+    canvas{
+        background:#87CEEB;
+        border:4px solid white;
+        margin-bottom:20px;
+    }
+
+    .info{
+        margin-bottom:20px;
+        font-size:18px;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>🎯 Simulador de Tiro Parabólico</h1>
+
+<div class="panel">
+
+    <label>
+        Velocidad Inicial (m/s)
+        <input type="number" id="velocidad" value="50">
+    </label>
+
+    <label>
+        Ángulo (grados)
+        <input type="number" id="angulo" value="45">
+    </label>
+
+    <label>
+        Gravedad
+        <input type="number" id="gravedad" value="9.8">
+    </label>
+
+    <label>
+        Altura Inicial
+        <input type="number" id="altura" value="0">
+    </label>
+
+    <button onclick="lanzar()">Lanzar Objeto</button>
+
+</div>
+
+<div class="info" id="datos">
+    Distancia: 0 m | Altura Máxima: 0 m | Tiempo: 0 s
+</div>
+
+<canvas id="canvas" width="1000" height="500"></canvas>
+
+<script>
+
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+let proyectil = null;
+let trayectoria = [];
+
+function dibujarSuelo(){
+    ctx.fillStyle = "green";
+    ctx.fillRect(0, 450, canvas.width, 50);
+}
+
+function dibujarTrayectoria(){
+    ctx.beginPath();
+    ctx.strokeStyle = "yellow";
+    ctx.lineWidth = 2;
+
+    for(let i=0; i<trayectoria.length; i++){
+        let p = trayectoria[i];
+
+        if(i === 0){
+            ctx.moveTo(p.x, p.y);
+        }else{
+            ctx.lineTo(p.x, p.y);
+        }
+    }
+
+    ctx.stroke();
+}
+
+function dibujarProyectil(){
+    if(!proyectil) return;
+
+    ctx.beginPath();
+    ctx.fillStyle = "red";
+    ctx.arc(proyectil.x, proyectil.y, 10, 0, Math.PI * 2);
+    ctx.fill();
+}
+
+function actualizar(){
+
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    dibujarSuelo();
+    dibujarTrayectoria();
+    dibujarProyectil();
+
+    if(proyectil){
+
+        proyectil.t += 0.05;
+
+        let t = proyectil.t;
+
+        let x = proyectil.vx * t;
+        let y = proyectil.h + (proyectil.vy * t) - (0.5 * proyectil.g * t * t);
+
+        proyectil.x = 50 + x * 5;
+        proyectil.y = 450 - y * 5;
+
+        trayectoria.push({
+            x: proyectil.x,
+            y: proyectil.y
+        });
+
+        if(proyectil.y >= 450){
+            proyectil = null;
+        }
+    }
+
+    requestAnimationFrame(actualizar);
+}
+
+function lanzar(){
+
+    trayectoria = [];
+
+    const velocidad = parseFloat(document.getElementById("velocidad").value);
+    const angulo = parseFloat(document.getElementById("angulo").value);
+    const gravedad = parseFloat(document.getElementById("gravedad").value);
+    const altura = parseFloat(document.getElementById("altura").value);
+
+    const rad = angulo * Math.PI / 180;
+
+    const vx = velocidad * Math.cos(rad);
+    const vy = velocidad * Math.sin(rad);
+
+    // Fórmulas físicas
+    const tiempoVuelo = (vy + Math.sqrt((vy*vy) + 2*gravedad*altura)) / gravedad;
+
+    const distancia = vx * tiempoVuelo;
+
+    const alturaMaxima = altura + ((vy*vy)/(2*gravedad));
+
+    document.getElementById("datos").innerHTML =
+        `Distancia: ${distancia.toFixed(2)} m |
+         Altura Máxima: ${alturaMaxima.toFixed(2)} m |
+         Tiempo: ${tiempoVuelo.toFixed(2)} s`;
+
+    proyectil = {
+        x:50,
+        y:450,
+        vx:vx,
+        vy:vy,
+        g:gravedad,
+        h:altura,
+        t:0
+    };
+}
+
+actualizar();
+
+</script>
+
+</body>
+</html>
