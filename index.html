@@ -128,6 +128,19 @@
             background: linear-gradient(135deg, #ff6666, #dd0000);
         }
 
+        .btn-info {
+            background: linear-gradient(135deg, #ffb800, #cc9200);
+            border-color: #ffb800;
+            padding: 8px 12px;
+            font-size: 14px;
+            flex: 0.3;
+        }
+
+        .btn-info:hover {
+            box-shadow: 0 0 20px rgba(255, 184, 0, 0.6);
+            background: linear-gradient(135deg, #ffcc33, #dd9900);
+        }
+
         .stats {
             background: rgba(0, 212, 255, 0.1);
             padding: 18px;
@@ -213,6 +226,133 @@
         .pulse {
             animation: pulse 0.5s ease-in-out;
         }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1f3a 0%, #16213e 100%);
+            padding: 40px;
+            border-radius: 15px;
+            border: 3px solid #00d4ff;
+            box-shadow: 0 0 40px rgba(0, 212, 255, 0.4);
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #00d4ff;
+            padding-bottom: 15px;
+        }
+
+        .modal-header h2 {
+            color: #00d4ff;
+            font-size: 28px;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #00d4ff;
+            font-size: 28px;
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            color: #00aaff;
+            transform: scale(1.2);
+        }
+
+        .modal-body {
+            color: #e0e0e0;
+            line-height: 1.8;
+        }
+
+        .modal-body h3 {
+            color: #00d4ff;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .modal-body p {
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .modal-body ul {
+            margin-left: 20px;
+            margin-bottom: 12px;
+        }
+
+        .modal-body li {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .modal-footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #00d4ff;
+            text-align: center;
+        }
+
+        .modal-footer button {
+            padding: 12px 30px;
+            margin: 0 10px;
+        }
+
+        .info-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+        }
     </style>
 </head>
 
@@ -256,6 +396,10 @@
             <button class="btn-reset" onclick="reset()">🔄 RESET</button>
         </div>
 
+        <div class="info-buttons">
+            <button class="btn-info" onclick="mostrarInstrucciones()">ℹ️ INSTRUCCIONES</button>
+        </div>
+
         <div class="stats">
             <div>📏 Distancia: <span id="distancia">0</span> m</div>
             <div>⬆️ Altura Máx: <span id="alturaMax">0</span> m</div>
@@ -271,6 +415,63 @@
     </div>
 
     <canvas id="gameCanvas"></canvas>
+</div>
+
+<!-- Modal de Instrucciones -->
+<div id="instructionsModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>📋 Instrucciones del Juego</h2>
+            <button class="close-btn" onclick="cerrarInstrucciones()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <h3>🎯 Objetivo</h3>
+            <p>Tu misión es lanzar un proyectil para acertar al objetivo rojo que aparece en la pantalla.</p>
+
+            <h3>🎮 Controles</h3>
+            <ul>
+                <li><strong>Velocidad Inicial (m/s):</strong> Determina la velocidad con la que se lanza el proyectil. Valores entre 5 y 100 m/s.</li>
+                <li><strong>Ángulo (grados):</strong> Define el ángulo de lanzamiento. Entre 0° y 90°. El ángulo óptimo es usualmente 45°.</li>
+                <li><strong>Gravedad (m/s²):</strong> Simula la aceleración gravitatoria. Por defecto es 9.8 m/s² (similar a la Tierra).</li>
+                <li><strong>Altura Inicial (m):</strong> La altura desde la cual se lanza el proyectil. Entre 0 y 50 metros.</li>
+            </ul>
+
+            <h3>🚀 Cómo jugar</h3>
+            <ol style="margin-left: 20px;">
+                <li>Ajusta los parámetros usando los controles deslizantes.</li>
+                <li>Haz clic en el botón <strong>"🚀 LANZAR"</strong> para disparar el proyectil.</li>
+                <li>Observa la trayectoria (línea amarilla) del proyectil.</li>
+                <li>Si aciertas al objetivo rojo, ¡ganaste 100 puntos! Se generará un nuevo objetivo.</li>
+                <li>Intenta mejorar tu puntuación acertando múltiples objetivos.</li>
+            </ol>
+
+            <h3>💡 Consejos</h3>
+            <ul>
+                <li>El ángulo de 45° generalmente proporciona la máxima distancia horizontal.</li>
+                <li>Usa la distancia estimada para ajustar la velocidad y el ángulo.</li>
+                <li>Experimenta con diferentes combinaciones de parámetros.</li>
+                <li>Puedes cambiar la gravedad para simular otros planetas.</li>
+            </ul>
+
+            <h3>🔄 Botones de Control</h3>
+            <ul>
+                <li><strong>🚀 LANZAR:</strong> Dispara el proyectil con los parámetros actuales.</li>
+                <li><strong>🔄 RESET:</strong> Reinicia el juego y borra la puntuación.</li>
+            </ul>
+
+            <h3>📊 Estadísticas</h3>
+            <p>Durante y después de cada lanzamiento, verás:</p>
+            <ul>
+                <li><strong>Distancia:</strong> Distancia horizontal recorrida por el proyectil (en metros).</li>
+                <li><strong>Altura Máx:</strong> Altura máxima alcanzada durante el vuelo (en metros).</li>
+                <li><strong>Tiempo Vuelo:</strong> Tiempo total que el proyectil estuvo en el aire (en segundos).</li>
+                <li><strong>Acertos:</strong> Número de objetivos acertados en la sesión actual.</li>
+            </ul>
+        </div>
+        <div class="modal-footer">
+            <button onclick="cerrarInstrucciones()">Cerrar</button>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -291,6 +492,28 @@
         radio: 20,
         generado: false
     };
+
+    // Funciones del Modal
+    function mostrarInstrucciones() {
+        document.getElementById("instructionsModal").classList.add("show");
+    }
+
+    function cerrarInstrucciones() {
+        document.getElementById("instructionsModal").classList.remove("show");
+    }
+
+    // Cerrar modal al hacer clic fuera del contenido
+    window.onclick = function(event) {
+        const modal = document.getElementById("instructionsModal");
+        if (event.target == modal) {
+            modal.classList.remove("show");
+        }
+    }
+
+    // Mostrar instrucciones al cargar la página
+    window.addEventListener("load", function() {
+        mostrarInstrucciones();
+    });
 
     // Actualizar valores en tiempo real
     document.getElementById("velocidad").addEventListener("input", (e) => {
